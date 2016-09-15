@@ -1,0 +1,294 @@
+package todo;
+
+import done.ClockInput;
+import done.ClockOutput;
+import se.lth.cs.realtime.semaphore.MutexSem;
+import se.lth.cs.realtime.semaphore.Semaphore;
+
+public class SettingsThread extends Thread {
+
+	private static ClockInput input;
+	private static ClockOutput output;
+	private static Semaphore sem;
+	private Data data;
+	private static MutexSem ms;
+	
+
+	public SettingsThread(ClockInput i, ClockOutput o, Data data, MutexSem ms) {
+		output = o;
+		input = i;
+		sem = input.getSemaphoreInstance();
+		this.data = data;
+		this.ms = ms;
+	}
+
+	public void run() {
+		while (true) {
+			sem.take();
+			switch (input.getChoice()) {
+			case 1:
+				data.setAlarmTime(input.getValue(), input.getAlarmFlag());
+				break;
+			case 2:
+				data.setTime(input.getValue());
+				break;
+			}
+
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package todo;
+
+import se.lth.cs.realtime.semaphore.MutexSem;
+import se.lth.cs.realtime.semaphore.Semaphore;
+
+public class Data {
+
+	private int seconds;
+	private int minutes;
+	private int hours;
+
+	private boolean alarmflag;
+	private boolean wake;
+	private int alarmtime;
+
+	private Semaphore mutex;
+
+	public Data(MutexSem sem) {
+		seconds = 0;
+		hours = 0;
+		minutes = 0;
+		mutex = sem;
+		alarmflag = false;
+	}
+
+	public int getCurrentTime() {
+		mutex.take();
+		seconds++;
+		if (seconds >= 60) {
+			seconds = 0;
+			minutes += 100;
+		}
+		if (minutes >= 6000) {
+			seconds = 0;
+			minutes = 0;
+			hours += 10000;
+		}
+		if (hours >= 240000) {
+			seconds = hours = minutes = 0;
+		}
+		if (alarmtime == (seconds + hours + minutes)) {
+			wake = true;
+		}
+		mutex.give();
+		return seconds + hours + minutes;
+	}
+
+	public void setTime(int time) {
+		mutex.take();
+		int counter = 0;
+		while (time > 0) {
+			if (counter == 0) {
+				seconds = time % 100;
+				time = time / 100;
+			} else if (counter == 1) {
+				minutes = (time % 100) * 100;
+				time = time / 100;
+			} else if (counter == 2) {
+				hours = (time % 100) * 10000;
+				time = time / 100;
+			}
+			counter++;
+		}
+		mutex.give();
+	}
+
+	public void setAlarmTime(int alarmtime, boolean flag) {
+		alarmflag = flag;
+		wake = false;
+		this.alarmtime = alarmtime;
+	}
+	
+	public boolean getAlarm() {
+		if(alarmflag && wake) {
+			return true;
+		} 
+		return false;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+package todo;
+
+import done.ClockInput;
+import done.ClockOutput;
+import se.lth.cs.realtime.semaphore.MutexSem;
+import se.lth.cs.realtime.semaphore.Semaphore;
+
+public class Time extends Thread {
+
+	private static ClockOutput output;
+	private static ClockInput input;
+	private static Semaphore sem;
+	private Data data;
+	private static MutexSem ms;
+
+	public Time(ClockInput i, ClockOutput o, Data data, MutexSem ms) {
+		input = i;
+		output = o;
+		this.data = data;
+		sem = input.getSemaphoreInstance();
+		this.ms = ms;
+	}
+
+	public void run() {
+		while (true) {
+			try {
+				Thread.sleep(1000);
+				output.showTime(data.getCurrentTime());
+				if (data.getAlarm()) {
+					output.doAlarm();
+				}
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+package todo;
+
+import se.lth.cs.realtime.semaphore.MutexSem;
+import se.lth.cs.realtime.semaphore.Semaphore;
+
+public class Data {
+
+	private int seconds;
+	private int minutes;
+	private int hours;
+
+	private boolean alarmflag;
+	private boolean wake;
+	private int alarmtime;
+
+	private Semaphore mutex;
+
+	public Data(MutexSem sem) {
+		seconds = 0;
+		hours = 0;
+		minutes = 0;
+		mutex = sem;
+		alarmflag = false;
+	}
+
+	public int getCurrentTime() {
+		mutex.take();
+		seconds++;
+		if (seconds >= 60) {
+			seconds = 0;
+			minutes += 100;
+		}
+		if (minutes >= 6000) {
+			seconds = 0;
+			minutes = 0;
+			hours += 10000;
+		}
+		if (hours >= 240000) {
+			seconds = hours = minutes = 0;
+		}
+		if (alarmtime == (seconds + hours + minutes)) {
+			wake = true;
+		}
+		mutex.give();
+		return seconds + hours + minutes;
+	}
+
+	public void setTime(int time) {
+		mutex.take();
+		int counter = 0;
+		while (time > 0) {
+			if (counter == 0) {
+				seconds = time % 100;
+				time = time / 100;
+			} else if (counter == 1) {
+				minutes = (time % 100) * 100;
+				time = time / 100;
+			} else if (counter == 2) {
+				hours = (time % 100) * 10000;
+				time = time / 100;
+			}
+			counter++;
+		}
+		mutex.give();
+	}
+
+	public void setAlarmTime(int alarmtime, boolean flag) {
+		alarmflag = flag;
+		wake = false;
+		this.alarmtime = alarmtime;
+	}
+	
+	public boolean getAlarm() {
+		if(alarmflag && wake) {
+			return true;
+		} 
+		return false;
+	}
+}
