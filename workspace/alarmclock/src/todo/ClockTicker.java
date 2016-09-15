@@ -7,21 +7,43 @@ import se.lth.cs.realtime.semaphore.Semaphore;
 public class ClockTicker extends Thread {
 	private AlarmClock ac;
 	private Semaphore outsem;
-
-	public ClockTicker(AlarmClock ac) {
+	private ClockOutput output;
+	public int Alarmcounter = 0;
+	
+	public ClockTicker(AlarmClock ac,ClockOutput co) {
 		this.ac = ac;
 		outsem = ac.getSemaphoreInstance();
+		this.output = co;
 		
 	}
 
 	public void run() {
 		while (true) {
+			if(ac.Ringing)
+			{
+			Alarmcounter++;
+			if(Alarmcounter >= 20){
+				ac.resetAlarm();
+			}
+			output.doAlarm();
+			
+			try {
+				sleep(700);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+			
+			
+			}else{
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}}
 			outsem.take();
 			updateTime();
 			System.out.println("tick");
