@@ -12,6 +12,7 @@ public class StateMachine extends Thread {//////////////////////////// 7
 	private int value = 0;
 	private AlarmClock ac;
 	private boolean taken = false;
+	private boolean newChoice = false;
 
 	public StateMachine(AlarmClock ac, ClockInput i) {
 		this.input = i;
@@ -34,7 +35,7 @@ public class StateMachine extends Thread {//////////////////////////// 7
 				switch (choice) {
 				case 0:
 					if (taken) {
-						outsem.give();
+						ac.stateDone();
 						taken = false;
 					}
 					break;
@@ -44,7 +45,7 @@ public class StateMachine extends Thread {//////////////////////////// 7
 				case 2:
 
 					if (!taken) {
-						outsem.take();
+					ac.changingState();
 						taken = true;
 					}
 					ac.setTime(value);

@@ -17,7 +17,7 @@ public class AlarmClock {
 	public int ah = 0;
 	public boolean Ringing = false;
 	public boolean AlarmFlag = false;
-	private int alarmcounter;
+	private int Alarmcounter = 0;
 
 	public AlarmClock(ClockInput i, ClockOutput o) {
 		input = i;
@@ -28,20 +28,24 @@ public class AlarmClock {
 
 	public void start() {
 		StateMachine sm = new StateMachine(this, input);
-		ClockTicker CT = new ClockTicker(this, output);
+		ClockTicker CT = new ClockTicker(this, output, Alarmcounter);
 		CT.start();
 		sm.start();
 	}
 
 	public void showTime() {
+		outsem.take();
+		updateTime();
 		output.showTime((h * 10000) + (m * 100) + (s));
 		if (ah == h && am == m && as == s && AlarmFlag) {
 			Ringing = true;
 
 		}
+		outsem.give();
 	}
 
 	public void setTime(int time) {
+	
 		int temp = time;
 		h = temp / 10000;
 		temp -= h * 10000;
@@ -64,13 +68,41 @@ public class AlarmClock {
 		return outsem;
 	}
 
-	public void giveAlarmC(int a) {
-		alarmcounter = a;
-
-	}
+	
 
 	public void resetAlarm() {
-		alarmcounter = 0;
+		Alarmcounter = 0;
 		Ringing = false;
 	}
+
+	public void stateDone() {
+		outsem.give();
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void changingState() {
+		outsem.take();
+		// TODO Auto-generated method stub
+		
+	}
+	private void updateTime() {
+
+		s++;
+		if (s >= 60) {
+			s = 0;
+			m += 1;
+
+			if (m >= 60) {
+				m = 0;
+				h += 1;
+
+				if (h >= 24) {
+					s = h = m = 0;
+				}
+			}
+		}
+
+	}
+
 }
