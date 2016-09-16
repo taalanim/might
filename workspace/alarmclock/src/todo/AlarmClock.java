@@ -15,32 +15,29 @@ public class AlarmClock {
 	public int as = 0;
 	public int am = 0;
 	public int ah = 0;
-	public Alarm alarm;
 	public boolean Ringing = false;
 	public boolean AlarmFlag = false;
-	private ClockTicker CT;
-	
-	
+	private int alarmcounter;
+
 	public AlarmClock(ClockInput i, ClockOutput o) {
 		input = i;
 		output = o;
 		this.outsem = new MutexSem();
-		alarm = new Alarm(output);
-		
+
 	}
 
 	public void start() {
 		StateMachine sm = new StateMachine(this, input);
-		CT = new ClockTicker(this, output);
+		ClockTicker CT = new ClockTicker(this, output);
 		CT.start();
 		sm.start();
 	}
 
 	public void showTime() {
 		output.showTime((h * 10000) + (m * 100) + (s));
-		if(ah ==h && am == m && as == s && AlarmFlag){
+		if (ah == h && am == m && as == s && AlarmFlag) {
 			Ringing = true;
-			
+
 		}
 	}
 
@@ -66,8 +63,14 @@ public class AlarmClock {
 		// TODO Auto-generated method stub
 		return outsem;
 	}
-public void resetAlarm(){
-	CT.Alarmcounter=0;
-	Ringing = false;
-}
+
+	public void giveAlarmC(int a) {
+		alarmcounter = a;
+
+	}
+
+	public void resetAlarm() {
+		alarmcounter = 0;
+		Ringing = false;
+	}
 }

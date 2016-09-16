@@ -23,11 +23,10 @@ public class StateMachine extends Thread {//////////////////////////// 7
 	public void run() {
 		while (true) {
 			sem.take();
-			ac.AlarmFlag = input.getAlarmFlag(); 
+			ac.AlarmFlag = input.getAlarmFlag();
 			if (ac.Ringing) {
 				ac.resetAlarm();
-			} 
-			else {
+			} else {
 
 				value = input.getValue();
 				choice = input.getChoice();
