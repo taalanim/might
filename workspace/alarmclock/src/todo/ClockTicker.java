@@ -10,51 +10,50 @@ public class ClockTicker extends Thread {
 	private ClockOutput output;
 	private int Alarmcounter;
 	private long time;
+	private long time2;
+	private long lostTime;
+	private boolean ticktock;
 
+	
 	public ClockTicker(AlarmClock ac, ClockOutput co, int alarmc) {
 		this.ac = ac;
-		outsem = ac.getSemaphoreInstance();
+		
 		this.output = co;
 		this.Alarmcounter= alarmc;
 		time = 0;
+		lostTime = 0;
+		ticktock= false;
 	}
 
 	public void run() {
+		try {
+			time2 = System.currentTimeMillis();
+			Thread.sleep(1000);
+			lostTime = System.currentTimeMillis();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	System.out.println("tick");
+	ac.showTime();
 		while (true) {
-			if (ac.Ringing) {
-				Alarmcounter++;
-				if (Alarmcounter >= 20) {
-					ac.resetAlarm();
-				}
-				output.doAlarm();
-
 				try {
-					sleep(700 - time());
+					time2 = System.currentTimeMillis();
+					Thread.sleep(1000 - (time2 - lostTime));
+					lostTime = System.currentTimeMillis();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
-			} else {
-				try {
-					Thread.sleep(1000 - time());
-					time = System.currentTimeMillis();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			if(ticktock){
+				System.out.println("tick");
+			} else{
+				System.out.println("tock");
 			}
-			System.out.println("tick");
+			ticktock = !ticktock;
 			ac.showTime();
 		}
-	}
-	private long time(){  // I ruv u
-		long temp = time;
-		time = System.currentTimeMillis();
-		if(time - temp > 1000){
-			return 999;
-		}
-		return time - temp;
 	}
 
 	

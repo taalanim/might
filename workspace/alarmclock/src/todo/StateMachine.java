@@ -7,18 +7,17 @@ import done.ClockOutput;
 public class StateMachine extends Thread {//////////////////////////// 7
 	private Semaphore sem;
 	private ClockInput input;
-	private Semaphore outsem;
 	private int choice = 0;
 	private int value = 0;
 	private AlarmClock ac;
-	private boolean taken = false;
-	private boolean newChoice = false;
+	private boolean settime = false;
+	private boolean setAtime = false;
 
 	public StateMachine(AlarmClock ac, ClockInput i) {
 		this.input = i;
 		this.ac = ac;
 		sem = i.getSemaphoreInstance();
-		outsem = ac.getSemaphoreInstance();
+
 	}
 
 	public void run() {
@@ -34,21 +33,21 @@ public class StateMachine extends Thread {//////////////////////////// 7
 
 				switch (choice) {
 				case 0:
-					if (taken) {
-						ac.stateDone();
-						taken = false;
+					if (settime) {
+						ac.setTime(value);
+					} else if (setAtime) {
+						ac.setAlarmTime(value);
 					}
+					settime = false;
+					setAtime = false;
 					break;
 				case 1:
-					ac.setAlarmTime(value);
+					setAtime = true;
+					settime = false;
 					break;
 				case 2:
-
-					if (!taken) {
-					ac.changingState();
-						taken = true;
-					}
-					ac.setTime(value);
+					settime = true;
+					setAtime = false;
 					break;
 				}
 

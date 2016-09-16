@@ -8,23 +8,26 @@ public class AlarmClock {
 
 	private static ClockInput input;
 	private static ClockOutput output;
-	private Semaphore outsem;
-	public int s = 0;
-	public int m = 0;
-	public int h = 0;
-	public int as = 0;
-	public int am = 0;
-	public int ah = 0;
+	private int s = 0;
+	private int m = 0;
+	private int h = 0;
+	private int as = 0;
+	private int am = 0;
+	private int ah = 0;
 	public boolean Ringing = false;
 	public boolean AlarmFlag = false;
 	private int Alarmcounter = 0;
-
+	private Semaphore alarmsem;
+	private Semaphore restartsem;
+	private Semaphore outsem;
+	
 	public AlarmClock(ClockInput i, ClockOutput o) {
 		input = i;
 		output = o;
 		this.outsem = new MutexSem();
-
-	}
+		this.alarmsem = new MutexSem();
+		this.restartsem = new MutexSem();
+		}
 
 	public void start() {
 		StateMachine sm = new StateMachine(this, input);
@@ -37,54 +40,59 @@ public class AlarmClock {
 		outsem.take();
 		updateTime();
 		output.showTime((h * 10000) + (m * 100) + (s));
+		
+		if (!Ringing)
+		{
+			alarmTest();
+		}
+		else {
+			restartsem.take();
+			Alarmcounter++;
+			if (Alarmcounter >= 20) {
+				resetAlarm();
+			}
+			output.doAlarm();
+			restartsem.give();
+			}
+		
+		
+		outsem.give();
+	}
+	private void alarmTest(){
+		alarmsem.take();
 		if (ah == h && am == m && as == s && AlarmFlag) {
 			Ringing = true;
 
 		}
-		outsem.give();
+		alarmsem.give();
 	}
 
 	public void setTime(int time) {
-	
+		outsem.take();
 		int temp = time;
 		h = temp / 10000;
 		temp -= h * 10000;
 		m = temp / 100;
 		temp -= m * 100;
 		s = temp;
+		outsem.give();
 	}
 
 	public void setAlarmTime(int value) {
+		alarmsem.take();
 		int temp = value;
 		ah = temp / 10000;
 		temp -= ah * 10000;
 		am = temp / 100;
 		temp -= am * 100;
 		as = temp;
+		alarmsem.give();
 	}
-
-	public Semaphore getSemaphoreInstance() {
-		// TODO Auto-generated method stub
-		return outsem;
-	}
-
-	
-
 	public void resetAlarm() {
+		restartsem.take();
 		Alarmcounter = 0;
 		Ringing = false;
-	}
-
-	public void stateDone() {
-		outsem.give();
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void changingState() {
-		outsem.take();
-		// TODO Auto-generated method stub
-		
+		restartsem.give();
 	}
 	private void updateTime() {
 
