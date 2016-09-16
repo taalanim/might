@@ -14,20 +14,19 @@ public class AlarmClock {
 	private int as = 0;
 	private int am = 0;
 	private int ah = 0;
+
+	private int Alarmcounter = 0;
+
 	public boolean Ringing = false;
 	public boolean AlarmFlag = false;
-	private int Alarmcounter = 0;
-	private Semaphore alarmsem;
-	private Semaphore restartsem;
-	private Semaphore outsem;
-	
+
+	private Semaphore timeSem;
+
 	public AlarmClock(ClockInput i, ClockOutput o) {
 		input = i;
 		output = o;
-		this.outsem = new MutexSem();
-		this.alarmsem = new MutexSem();
-		this.restartsem = new MutexSem();
-		}
+		this.timeSem = new MutexSem();
+	}
 
 	public void start() {
 		StateMachine sm = new StateMachine(this, input);
@@ -37,63 +36,63 @@ public class AlarmClock {
 	}
 
 	public void showTime() {
-		outsem.take();
+		timeSem.take();
 		updateTime();
 		output.showTime((h * 10000) + (m * 100) + (s));
-		
-		if (!Ringing)
-		{
+
+		if (!Ringing) {
 			alarmTest();
-		}
-		else {
-			restartsem.take();
+		} else {
 			Alarmcounter++;
 			if (Alarmcounter >= 20) {
 				resetAlarm();
 			}
 			output.doAlarm();
-			restartsem.give();
-			}
-		
-		
-		outsem.give();
+		}
+
+		timeSem.give();
 	}
-	private void alarmTest(){
-		alarmsem.take();
+
+	private void alarmTest() {
 		if (ah == h && am == m && as == s && AlarmFlag) {
 			Ringing = true;
 
 		}
-		alarmsem.give();
 	}
 
+
+
 	public void setTime(int time) {
-		outsem.take();
+		timeSem.take();
 		int temp = time;
 		h = temp / 10000;
 		temp -= h * 10000;
 		m = temp / 100;
 		temp -= m * 100;
 		s = temp;
-		outsem.give();
+		// timerSetter(h, m, s, time);
+		timeSem.give();
 	}
 
 	public void setAlarmTime(int value) {
-		alarmsem.take();
+		timeSem.take();
 		int temp = value;
 		ah = temp / 10000;
 		temp -= ah * 10000;
 		am = temp / 100;
 		temp -= am * 100;
 		as = temp;
-		alarmsem.give();
+		// timerSetter(ah,am,as,value);
+		timeSem.give();
 	}
+
 	public void resetAlarm() {
-		restartsem.take();
+		timeSem.take();
 		Alarmcounter = 0;
 		Ringing = false;
-		restartsem.give();
+		timeSem.give();
 	}
+
 	private void updateTime() {
 
 		s++;
@@ -112,5 +111,5 @@ public class AlarmClock {
 		}
 
 	}
-// slight change
+	// slight change
 }

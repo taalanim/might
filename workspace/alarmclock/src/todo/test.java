@@ -32,4 +32,31 @@ public class test {
 //		last = next;
 //		break;
 //	}
-//}
+//}try {
+/**
+time2 = System.currentTimeMillis();
+Thread.sleep(1000);
+lostTime = System.currentTimeMillis();
+} catch (InterruptedException e) {
+// TODO Auto-generated catch block
+e.printStackTrace();
+}
+
+System.out.println("tick");
+ac.showTime();
+
+
+while (true) {
+try {
+	time2 = System.currentTimeMillis();
+	Thread.sleep(1000 - (time2 - lostTime));
+	lostTime = System.currentTimeMillis();
+} catch (InterruptedException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
+
+
+ticktock();
+ac.showTime();
+}*/
