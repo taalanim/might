@@ -46,16 +46,19 @@ public class ClockTicker extends Thread {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			if(ticktock){
-				System.out.println("tick");
-			} else{
-				System.out.println("tock");
-			}
-			ticktock = !ticktock;
+				ticktock();
+			
 			ac.showTime();
 		}
 	}
 
-	
+	private void ticktock(){
+		if(ticktock){
+			System.out.println("tick");
+		} else{
+			System.out.println("tock");
+		}
+		ticktock = !ticktock;
+	}
 // slight change
 }

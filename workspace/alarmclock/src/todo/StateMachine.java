@@ -2,9 +2,8 @@ package todo;
 
 import se.lth.cs.realtime.semaphore.Semaphore;
 import done.ClockInput;
-import done.ClockOutput;
 
-public class StateMachine extends Thread {//////////////////////////// 7
+public class StateMachine extends Thread {
 	private Semaphore sem;
 	private ClockInput input;
 	private int choice = 0;
