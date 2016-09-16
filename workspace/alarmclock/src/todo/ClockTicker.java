@@ -9,13 +9,14 @@ public class ClockTicker extends Thread {
 	private Semaphore outsem;
 	private ClockOutput output;
 	private int Alarmcounter;
+	private long time;
 
 	public ClockTicker(AlarmClock ac, ClockOutput co, int alarmc) {
 		this.ac = ac;
 		outsem = ac.getSemaphoreInstance();
 		this.output = co;
 		this.Alarmcounter= alarmc;
-
+		time = 0;
 	}
 
 	public void run() {
@@ -28,7 +29,7 @@ public class ClockTicker extends Thread {
 				output.doAlarm();
 
 				try {
-					sleep(700);
+					sleep(700 - time());
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -36,7 +37,8 @@ public class ClockTicker extends Thread {
 
 			} else {
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(1000 - time());
+					time = System.currentTimeMillis();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -45,6 +47,14 @@ public class ClockTicker extends Thread {
 			System.out.println("tick");
 			ac.showTime();
 		}
+	}
+	private long time(){  // I ruv u
+		long temp = time;
+		time = System.currentTimeMillis();
+		if(time - temp > 1000){
+			return 999;
+		}
+		return time - temp;
 	}
 
 	
