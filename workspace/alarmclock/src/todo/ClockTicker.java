@@ -6,22 +6,11 @@ import se.lth.cs.realtime.semaphore.Semaphore;
 
 public class ClockTicker extends Thread {
 	private AlarmClock ac;
-	private Semaphore outsem;
-	private ClockOutput output;
-	private int Alarmcounter;
-	private long time;
-	private long time2;
-	private long lostTime;
 	private boolean ticktock;
 	private long t, diff = 0;
 
 	public ClockTicker(AlarmClock ac, ClockOutput co, int alarmc) {
 		this.ac = ac;
-
-		this.output = co;
-		this.Alarmcounter = alarmc;
-		time = 0;
-		lostTime = 0;
 		ticktock = false;
 	}
 

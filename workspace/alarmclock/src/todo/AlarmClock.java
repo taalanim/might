@@ -42,7 +42,8 @@ public class AlarmClock {
 
 		if (!Ringing) {
 			alarmTest();
-		} else {
+		} 
+		if (Ringing){
 			Alarmcounter++;
 			if (Alarmcounter >= 20) {
 				resetAlarm();
