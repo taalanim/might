@@ -11,7 +11,6 @@ public class Monitor {
 	public Monitor() {
 
 		this.view = new LiftView();
-	
 
 	}
 
@@ -22,12 +21,13 @@ public class Monitor {
 		notifyAll();
 		while ((pepsWaitingForFloor[loc] != 0) || (pepsWaitingAtFloor[loc] != 0 && pepsInside < 4)) {
 			try {
+				System.out.println("waiting lift");
 				wait();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		
+
 	}
 
 	private void calcNextLoc() {
@@ -44,11 +44,12 @@ public class Monitor {
 	}
 
 	public synchronized Boolean shouldIEnter(int floor, int destination) {
-		System.out.println("checked in");
 		pepsWaitingAtFloor[floor]++;
 		view.drawLevel(floor, pepsWaitingAtFloor[floor]);
-		while (pepsInside < 4 || floor != loc) { // do waiting
+		while ((pepsInside == 4) || floor != loc) { // do waiting
 			try {
+				// System.out.println("waiting to go in \npeps:" + pepsInside +
+				// " floor: " + floor+ " location: " +loc);
 				wait();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block

@@ -10,41 +10,45 @@ public class Person extends Thread {
 	public Person(Monitor mon) {
 
 		this.monitor = mon;
+		init();
+	}
+
+	public Person(Monitor mon, int i, int j) { // test constructor
+		this.monitor = mon;
+		floor = i;
+		dest = j;
 	}
 
 	public void run() {
-		init();
-		System.out.println("inited");
+
 		while (true) {
 			if (!inLift) {
-				inLift = monitor.shouldIEnter(floor,dest);
+				inLift = monitor.shouldIEnter(floor, dest);
 			} else {
 				inLift = monitor.shouldIExit(dest);
-				dontcont(); // remove later
+				slepe(); // remove later
+				init();
 
 			}
 		}
 
-	}
-
-	private void dontcont() {// remove later
-		if (!inLift) {
-			while (true) {
-				try {
-					sleep(99999999);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
 	}
 
 	private void init() {
 		floor = (int) (7 * Math.random());
 		do {
 			dest = (int) (7 * Math.random());
-		} while (floor != dest);
-		
+		} while (floor == dest);
+
+	}
+
+	private void slepe() {
+		try {
+			int delay = (int) (Math.random() * 10000);
+
+			Thread.sleep(delay);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }
