@@ -1,53 +1,52 @@
 package lift;
 
 public class Monitor {
-	private int loc = 0;
-	private int nextLoc = 1;
+	private int here = 0;
+	private int next = 0;
 	private int[] pepsWaitingAtFloor = new int[7];
 	private int[] pepsWaitingForFloor = new int[7];
-	private int pepsInside = 0;
-	private int pepsTot = 0;
+	private int pepsInside = 0, pepsTot = 0, dirr = 1;
+	boolean moving = false;
+
 	private LiftView view;
 
-	public Monitor() {
+	public Monitor(LiftView v) {
 
-		this.view = new LiftView();
+		this.view = v;
 
 	}
 
-	public synchronized boolean shouldIStay() {
-		// System.out.println(pepsTot);
-		return (pepsTot == 0);
-	}
+	public synchronized int movementSystem() {
+		moving = false;
+		here = next;
 
-	public void moveElevator() {
-		view.moveLift(loc, nextLoc);
-		movementSystem();
-	}
-
-	private synchronized void movementSystem() {
-		calcNextLoc();
-		notifyAll();
-		while ((pepsWaitingForFloor[loc] != 0) || (pepsWaitingAtFloor[loc] != 0 && pepsInside < 4)) {
+		while ((pepsWaitingForFloor[here] != 0) || (pepsWaitingAtFloor[here] != 0 && pepsInside < 4)
+				|| (pepsTot == 0)) {
 			try {
+			//	System.out.println("in wait   :  " + here + "   " + next);
+				notifyAll();
 				wait();
+				//System.out.println("out of wait   :  " + here + "   " + next);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
+	//	System.out.println("movement");
+
+		calcNextLoc();
+		notifyAll();
+		moving = true;
+		return next;
 
 	}
 
 	private void calcNextLoc() {
-		int oldLoc = loc;
-		loc = nextLoc;
-		if (loc == 6) {
-			nextLoc = 5;
-		} else if (loc == 0) {
-			nextLoc = 1;
-		} else {
-			nextLoc += (loc - oldLoc);
+		if (here == 6) {
+			dirr = -1;
+		} else if (here == 0) {
+			dirr = 1;
 		}
+		next += dirr;
 
 	}
 
@@ -56,26 +55,33 @@ public class Monitor {
 		pepsTot++;
 		view.drawLevel(floor, pepsWaitingAtFloor[floor]);
 
-		while ((pepsInside == 4) || floor != loc) { // do waiting
+		while ((pepsInside == 4) || floor != here||moving) { // do waiting
 			try {
+			//	System.out.println("- im in wait  : person");
+				notifyAll();
 				wait();
-			} catch (InterruptedException e) {
+			//	System.out.println("- Im out of the wait  : person");
 
+			} catch (InterruptedException e) {
+				System.out.println("- Im got interuppted : person");
 				e.printStackTrace();
 			}
 
 		} // done waiting
+
 		pepsWaitingForFloor[destination]++;
 		pepsWaitingAtFloor[floor]--;
 		pepsInside++;
 		view.drawLevel(floor, pepsWaitingAtFloor[floor]);
-		view.drawLift(loc, pepsInside);
+		view.drawLift(here, pepsInside);
 		notifyAll();
 	}
 
 	public synchronized void shouldIExit(int destination) {
-		while (loc != destination) { // do waiting
+	
+		while (here != destination) { // do waiting
 			try {
+				notifyAll();
 				wait();
 			} catch (InterruptedException e) {
 
@@ -84,9 +90,9 @@ public class Monitor {
 
 		} // done waiting
 		pepsInside--;
-		pepsWaitingForFloor[loc]--;
+		pepsWaitingForFloor[here]--;
 		pepsTot--;
-		view.drawLift(loc, pepsInside);
+		view.drawLift(here, pepsInside);
 		notifyAll();
 	}
 

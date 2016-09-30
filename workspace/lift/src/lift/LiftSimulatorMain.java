@@ -1,20 +1,21 @@
 package lift;
 
 public class LiftSimulatorMain {
-	private static int startPeps = 1;
+	private static int startPeps = 7;
 
 	public static void main(String[] args) {
+		LiftView v = new LiftView();
 
-		Monitor mon = new Monitor();
+		Monitor mon = new Monitor(v);
 
-		Lift lift = new Lift(mon);
+		Lift lift = new Lift(mon, v);
 
 		Person[] people = new Person[startPeps];
 		for (int i = 0; i < startPeps; i++) {
 			people[i] = new Person(mon);
 			people[i].start();
 		}
-//		Person p1 = new Person(mon, 2, 3);
+//		Person p1 = new Person(mon, 4, 5);
 //		p1.start();
 //		Person p2 = new Person(mon, 2, 3);
 //		p2.start();

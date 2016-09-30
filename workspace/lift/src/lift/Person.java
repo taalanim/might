@@ -21,6 +21,7 @@ public class Person extends Thread {
 
 	public void run() {
 
+		slepe();
 		while (true) {
 			if (!inLift) {
 				 monitor.shouldIEnter(floor, dest);
@@ -46,7 +47,6 @@ public class Person extends Thread {
 		do {
 			dest = (int) (7 * Math.random());
 		} while (floor == dest);
-//System.out.println(floor + "  :  " + dest);
 	}
 
 	private void slepe() {
