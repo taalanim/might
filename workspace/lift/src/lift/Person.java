@@ -42,10 +42,11 @@ public class Person extends Thread {
 	
 	private void init() {
 		floor = (int) (7 * Math.random());
+		
 		do {
 			dest = (int) (7 * Math.random());
 		} while (floor == dest);
-
+//System.out.println(floor + "  :  " + dest);
 	}
 
 	private void slepe() {

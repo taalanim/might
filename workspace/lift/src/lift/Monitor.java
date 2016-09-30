@@ -6,18 +6,26 @@ public class Monitor {
 	private int[] pepsWaitingAtFloor = new int[7];
 	private int[] pepsWaitingForFloor = new int[7];
 	private int pepsInside = 0;
+	private int pepsTot = 0;
 	private LiftView view;
 
 	public Monitor() {
 
 		this.view = new LiftView();
-		
 
 	}
-public void animateLift(){
-	view.moveLift(loc, nextLoc);
-}
-	public synchronized void moveElevator() {	
+
+	public synchronized boolean shouldIStay() {
+		// System.out.println(pepsTot);
+		return (pepsTot == 0);
+	}
+
+	public void moveElevator() {
+		view.moveLift(loc, nextLoc);
+		movementSystem();
+	}
+
+	private synchronized void movementSystem() {
 		calcNextLoc();
 		notifyAll();
 		while ((pepsWaitingForFloor[loc] != 0) || (pepsWaitingAtFloor[loc] != 0 && pepsInside < 4)) {
@@ -27,7 +35,7 @@ public void animateLift(){
 				e.printStackTrace();
 			}
 		}
-		
+
 	}
 
 	private void calcNextLoc() {
@@ -43,11 +51,11 @@ public void animateLift(){
 
 	}
 
-	
 	public synchronized void shouldIEnter(int floor, int destination) {
 		pepsWaitingAtFloor[floor]++;
+		pepsTot++;
 		view.drawLevel(floor, pepsWaitingAtFloor[floor]);
-		
+
 		while ((pepsInside == 4) || floor != loc) { // do waiting
 			try {
 				wait();
@@ -77,6 +85,7 @@ public void animateLift(){
 		} // done waiting
 		pepsInside--;
 		pepsWaitingForFloor[loc]--;
+		pepsTot--;
 		view.drawLift(loc, pepsInside);
 		notifyAll();
 	}
