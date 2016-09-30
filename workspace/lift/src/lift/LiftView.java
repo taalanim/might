@@ -168,7 +168,7 @@ public class LiftView {
 			for(animateX=0;animateX<width;animateX+=20) {
 				repaint();
 				try {
-					Thread.sleep(50);
+					Thread.sleep(100);
 				} catch(InterruptedException e) { }
 			}
 			animateX = 0;
@@ -217,14 +217,14 @@ public class LiftView {
 				for(int y=start;y<stop;y+=INCREMENT) {
 					setLocation(2,y);
 					try {
-						Thread.sleep(5);
+						Thread.sleep(50);
 					} catch(InterruptedException e) { }
 				}
 			} else {
 				for(int y=start;y>stop;y-=INCREMENT) {
 					setLocation(2,y);
 					try {
-						Thread.sleep(5);
+						Thread.sleep(50);
 					} catch(InterruptedException e) { }
 				}
 			}

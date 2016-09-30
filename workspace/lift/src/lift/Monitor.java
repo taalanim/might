@@ -60,8 +60,8 @@ public class Monitor {
 		pepsWaitingForFloor[destination]++;
 		pepsWaitingAtFloor[floor]--;
 		pepsInside++;
-		view.drawLift(loc, pepsInside);
 		view.drawLevel(floor, pepsWaitingAtFloor[floor]);
+		view.drawLift(loc, pepsInside);
 		notifyAll();
 		return true;
 	}

@@ -1,7 +1,7 @@
 package lift;
 
 public class LiftSimulatorMain {
-
+private static int startPeps = 15;
 	public static void main(String[] args) {
 
 		Monitor mon = new Monitor();
@@ -10,8 +10,8 @@ public class LiftSimulatorMain {
 
 		
 		
-		Person[] people = new Person[21];
-			for(int i=0;i<21;i++){
+		Person[] people = new Person[startPeps];
+			for(int i=0;i<startPeps;i++){
 				people[i] = new Person(mon);
 				people[i].start();
 			}

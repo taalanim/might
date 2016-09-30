@@ -26,7 +26,7 @@ public class Person extends Thread {
 				inLift = monitor.shouldIEnter(floor, dest);
 			} else {
 				inLift = monitor.shouldIExit(dest);
-				slepe(); // remove later
+				slepe();
 				init();
 
 			}
