@@ -11,23 +11,23 @@ public class Monitor {
 	public Monitor() {
 
 		this.view = new LiftView();
+		
 
 	}
-
-	public synchronized void moveElevator() {
-
-		view.moveLift(loc, nextLoc);
+public void animateLift(){
+	view.moveLift(loc, nextLoc);
+}
+	public synchronized void moveElevator() {	
 		calcNextLoc();
 		notifyAll();
 		while ((pepsWaitingForFloor[loc] != 0) || (pepsWaitingAtFloor[loc] != 0 && pepsInside < 4)) {
 			try {
-				System.out.println("waiting lift");
 				wait();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-
+		
 	}
 
 	private void calcNextLoc() {
@@ -43,16 +43,16 @@ public class Monitor {
 
 	}
 
-	public synchronized Boolean shouldIEnter(int floor, int destination) {
+	
+	public synchronized void shouldIEnter(int floor, int destination) {
 		pepsWaitingAtFloor[floor]++;
 		view.drawLevel(floor, pepsWaitingAtFloor[floor]);
+		
 		while ((pepsInside == 4) || floor != loc) { // do waiting
 			try {
-				// System.out.println("waiting to go in \npeps:" + pepsInside +
-				// " floor: " + floor+ " location: " +loc);
 				wait();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+
 				e.printStackTrace();
 			}
 
@@ -63,15 +63,14 @@ public class Monitor {
 		view.drawLevel(floor, pepsWaitingAtFloor[floor]);
 		view.drawLift(loc, pepsInside);
 		notifyAll();
-		return true;
 	}
 
-	public synchronized Boolean shouldIExit(int destination) {
+	public synchronized void shouldIExit(int destination) {
 		while (loc != destination) { // do waiting
 			try {
 				wait();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+
 				e.printStackTrace();
 			}
 
@@ -79,9 +78,7 @@ public class Monitor {
 		pepsInside--;
 		pepsWaitingForFloor[loc]--;
 		view.drawLift(loc, pepsInside);
-		view.drawLevel(loc, pepsWaitingAtFloor[loc]);
 		notifyAll();
-		return false;
 	}
 
 }

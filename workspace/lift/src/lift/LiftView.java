@@ -217,14 +217,14 @@ public class LiftView {
 				for(int y=start;y<stop;y+=INCREMENT) {
 					setLocation(2,y);
 					try {
-						Thread.sleep(50);
+						Thread.sleep(40);
 					} catch(InterruptedException e) { }
 				}
 			} else {
 				for(int y=start;y>stop;y-=INCREMENT) {
 					setLocation(2,y);
 					try {
-						Thread.sleep(50);
+						Thread.sleep(40);
 					} catch(InterruptedException e) { }
 				}
 			}

@@ -23,9 +23,11 @@ public class Person extends Thread {
 
 		while (true) {
 			if (!inLift) {
-				inLift = monitor.shouldIEnter(floor, dest);
+				 monitor.shouldIEnter(floor, dest);
+				inLift = true;
 			} else {
-				inLift = monitor.shouldIExit(dest);
+				monitor.shouldIExit(dest);
+				inLift = false;
 				slepe();
 				init();
 
@@ -34,6 +36,10 @@ public class Person extends Thread {
 
 	}
 
+	
+	
+	
+	
 	private void init() {
 		floor = (int) (7 * Math.random());
 		do {

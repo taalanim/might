@@ -16,6 +16,7 @@ public class Lift extends Thread {
 		}
 		while (true) {
 
+			monitor.animateLift();
 			monitor.moveElevator();
 		}
 	}
