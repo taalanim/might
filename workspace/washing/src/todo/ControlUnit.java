@@ -9,11 +9,11 @@ import done.AbstractWashingMachine;
 //of water in the machine.
 
 public class ControlUnit {
-	private AbstractWashingMachine wM;
+	private AbstractWashingMachine wm;
 	private boolean input = false, output = false;
 
 	public ControlUnit(AbstractWashingMachine a) {
-		wM = a;
+		wm = a;
 	}
 
 	// 1
@@ -21,7 +21,7 @@ public class ControlUnit {
 		if (on && output) {
 			return false;
 		}
-		wM.setFill(on);
+		wm.setFill(on);
 		return true;
 	}
 
@@ -30,38 +30,51 @@ public class ControlUnit {
 		if (on && input) {
 			return false;
 		}
-		wM.setDrain(on);
+		wm.setDrain(on);
 		return true;
 	}
 
 	// 2
-	public boolean heat(boolean on) {
-		if (on && wM.getWaterLevel() == 0) {
+	public boolean setHeating(boolean on) {
+		if (on && wm.getWaterLevel() == 0) {
 			return false;
 		}
 
-		wM.setHeating(on);
+		wm.setHeating(on);
 		return true;
 	}
 
 	// 3
-	public boolean openDoor(boolean lock) {
-		if (!lock && wM.getWaterLevel() != 0) {
+	public boolean setLock(boolean lock) {
+		if (!lock && wm.getWaterLevel() != 0) {
 			return false;
 		}
 
-		wM.setLock(lock);
+		wm.setLock(lock);
 		return true;
 	}
 
 	// 4
 	// SPIN_FAST = 3;
-	public boolean spin(int dirr) {
-		if (dirr == 3 && wM.getWaterLevel() != 0) {
+	public boolean setSpin(int dirr) {
+		if (dirr == 3 && wm.getWaterLevel() != 0) {
 			return false;
 		}
 
-		wM.setSpin(dirr);
+		wm.setSpin(dirr);
 		return true;
 	}
+
+	public double getTemperature() {
+		return wm.getTemperature();
+	}
+
+	public double getWaterLevel() {
+		return wm.getWaterLevel();
+	}
+
+	public boolean isLocked() {
+		return wm.isLocked();
+	}
+
 }
