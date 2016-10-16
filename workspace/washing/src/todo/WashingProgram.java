@@ -151,7 +151,6 @@ public abstract class WashingProgram extends RTThread {
 		water.putEvent(new WaterEvent(this, WaterEvent.WATER_DRAIN, 0.0));
 		mailbox.doFetch();
 		water.putEvent(new WaterEvent(this, WaterEvent.WATER_IDLE, 0.0));
-		mailbox.doFetch();
 	}
 
 	protected void rinseAndCentrifuge() {

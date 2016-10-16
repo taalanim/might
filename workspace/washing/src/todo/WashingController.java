@@ -27,6 +27,7 @@ public class WashingController implements ButtonListener {
 		case 1:
 			if (changable) {
 				activeProgram = new WashingProgram1(cu, speed, tc, wc, sc);
+				activeProgram.start();
 				changable = false;
 			}
 			break;
@@ -34,6 +35,7 @@ public class WashingController implements ButtonListener {
 		case 2:
 			if (changable) {
 				activeProgram = new WashingProgram2(cu, speed, tc, wc, sc);
+				activeProgram.start();
 				changable = false;
 			}
 			break;
@@ -41,6 +43,7 @@ public class WashingController implements ButtonListener {
 		case 3:// rules???????
 			if (changable) {
 				activeProgram = new WashingProgram3(cu, speed, tc, wc, sc);
+				activeProgram.start();
 				changable = false;
 			}
 			break;

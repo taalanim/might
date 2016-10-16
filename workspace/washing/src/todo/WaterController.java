@@ -41,8 +41,7 @@ public class WaterController extends PeriodicThread {
 			case WaterEvent.WATER_IDLE: /** Regulation off, turn off all pumps */
 				cu.setDrain(false);
 				cu.setFill(false);
-				((RTThread) lastOrder.getSource()).putEvent(new RTEvent(this));
-				acksent = true;
+				acksent = true; // not acctually sent, but it works
 				break;
 			case  WaterEvent.WATER_FILL:/** Fill water to a given level */
 				cu.setFill(false);

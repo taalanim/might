@@ -17,15 +17,16 @@ public class TemperatureController extends PeriodicThread {
 	private TemperatureEvent we;
 	private boolean acksent = false;
 	private double lastTemp;
-	private double period, volym, power = 4200, rumsTemp = 20;
+	private double volym, power = 4200, rumsTemp = 20;
+	private int theoreticalPeriod = 10, counter = -1;
 
 	public TemperatureController(ControlUnit cu, double speed) {
-		super((long) (10000 / speed)); // TODO: replace with suitable period
+		super((long) (1000 / speed)); // TODO: replace with suitable period
 		this.cu = cu;
-		this.period = 10000 / speed;
 	}
 
-	public void perform() {
+	public void perform() { // = 1 second
+		counter++;
 		we = (TemperatureEvent) mailbox.tryFetch();
 
 		if (we != null) {
@@ -35,42 +36,46 @@ public class TemperatureController extends PeriodicThread {
 			lastTemp = we.getTemperature();
 
 		}
-		if (!acksent) {
-			switch (lastMode) {
-			case TemperatureEvent.TEMP_IDLE:/**
-											 * Temperature regulation off (no
-											 * heating)
-											 */
-				cu.setHeating(false);
-				((RTThread) lastOrder.getSource()).putEvent(new RTEvent(this));
-				acksent = true;
-				break;
-			case TemperatureEvent.TEMP_SET:/**
-											 * Reach and hold the given
-											 * temperature
-											 */
+
+		switch (lastMode) {
+
+		// Temperature regulation off (no heating)
+		case TemperatureEvent.TEMP_IDLE:
+
+			cu.setHeating(false);
+
+			break;
+
+		// Reach and hold the given temperature
+		case TemperatureEvent.TEMP_SET:
+
+			if (counter == theoreticalPeriod) {
 				cu.setHeating(regulator());
+				counter = 0;
+			}
+
+			break;
+
+		}
+	}
+
+	private boolean regulator() {// obs, abretar inte med för-värmda system
+		double temp = cu.getTemperature();
+		double volym = 10 * cu.getWaterLevel();
+		if (cu.isHeatOn()) {
+			if (temp >= (lastTemp - ((theoreticalPeriod * power) / (volym * 4186.4)))) {
+
 				if (!acksent) {
 					((RTThread) lastOrder.getSource()).putEvent(new RTEvent(this));
 					acksent = true;
 				}
-				break;
 
-			}
-		}
-	}
-
-	private boolean regulator() {
-		double temp = cu.getTemperature();
-		double volym = 10*cu.getWaterLevel();
-		if (cu.isHeatOn()) { // up = (period * power) / (volym * 4186.4); // if (temp >= (lastTemp - up))
-			if (temp >= (lastTemp - ((period * power) / (volym * 4186.4)))) {
 				return false;
 			}
 			return true;
-		} else { // ner = (period * (cu.getTemperature() - rumsTemp)) / (3500); // if (temp <= (lastTemp + ner))
-			
-			if (temp <= (lastTemp + ((period * (temp - rumsTemp)) / (3500)))) {
+		} else {
+
+			if (temp <= (lastTemp + ((theoreticalPeriod * (temp - rumsTemp)) / (3500)))) {
 				return true;
 			}
 			return false;
