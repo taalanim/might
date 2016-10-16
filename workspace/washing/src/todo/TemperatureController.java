@@ -17,7 +17,7 @@ public class TemperatureController extends PeriodicThread {
 	private TemperatureEvent we;
 	private boolean acksent = false;
 	private double lastTemp;
-	private double period, volym = 10, power = 4200, rumsTemp = 20;
+	private double period, volym, power = 4200, rumsTemp = 20;
 
 	public TemperatureController(ControlUnit cu, double speed) {
 		super((long) (10000 / speed)); // TODO: replace with suitable period
@@ -62,6 +62,7 @@ public class TemperatureController extends PeriodicThread {
 
 	private boolean regulator() {
 		double temp = cu.getTemperature();
+		double volym = 10*cu.getWaterLevel();
 		if (cu.isHeatOn()) { // up = (period * power) / (volym * 4186.4); // if (temp >= (lastTemp - up))
 			if (temp >= (lastTemp - ((period * power) / (volym * 4186.4)))) {
 				return false;

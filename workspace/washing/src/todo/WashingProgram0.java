@@ -11,7 +11,7 @@ class WashingProgram0 extends WashingProgram {
 	}
 
 	@Override
-	protected void wash() throws InterruptedException {
+	protected void wash() throws InterruptedException {/// might not need this class
 		// stop all
 
 		// heating off

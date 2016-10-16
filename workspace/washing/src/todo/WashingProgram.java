@@ -130,13 +130,15 @@ public abstract class WashingProgram extends RTThread {
 	 */
 	protected SpinController spin;
 	protected long sec;
+	
+	protected double fullMachine = 0.9;
 
 	protected void fillSpinDrain(double heatingTo, long time) {
 		// let water into the machine
-		water.putEvent(new WaterEvent(this, WaterEvent.WATER_FILL, 0.9));
+		water.putEvent(new WaterEvent(this, WaterEvent.WATER_FILL, fullMachine));
 		mailbox.doFetch();
 
-		// heat to 40C, keep the temperature for 15 minutes
+		// heat to heatingTo C, keep the temperature for time minutes
 		temp.putEvent(new TemperatureEvent(this, TemperatureEvent.TEMP_SET, heatingTo));
 		spin.putEvent(new SpinEvent(this, SpinEvent.SPIN_SLOW));
 		mailbox.doFetch();
@@ -155,7 +157,7 @@ public abstract class WashingProgram extends RTThread {
 	protected void rinseAndCentrifuge() {
 		// rinse 5 times 2 minutes in cold water
 		for (int i = 0; i < 5; i++) {
-			water.putEvent(new WaterEvent(this, WaterEvent.WATER_FILL, 0.9));
+			water.putEvent(new WaterEvent(this, WaterEvent.WATER_FILL, fullMachine));
 			mailbox.doFetch();
 			spin.putEvent(new SpinEvent(this, SpinEvent.SPIN_SLOW));
 			sleep(2 * 60 * sec);
