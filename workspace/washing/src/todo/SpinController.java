@@ -14,7 +14,6 @@ import done.AbstractWashingMachine;
 public class SpinController extends PeriodicThread {
 	private ControlUnit cu;
 	private int lastMode;
-	private SpinEvent lastOrder;
 	private SpinEvent we;
 	private int dirrection = 1;
 	private int theoreticalPeriod = 10, counter = -1;
@@ -25,11 +24,11 @@ public class SpinController extends PeriodicThread {
 	}
 
 	public void perform() {
+	
 		counter++;
 		we = (SpinEvent) mailbox.tryFetch();
 
 		if (we != null) {
-			lastOrder = we;
 			lastMode = we.getMode();
 
 		}
@@ -46,7 +45,7 @@ public class SpinController extends PeriodicThread {
 		// Slow spin, changing direction periodically.
 		case SpinEvent.SPIN_SLOW:
 
-			if (counter == theoreticalPeriod) {
+			if (counter >= theoreticalPeriod) {
 				cu.setSpin(dirr());
 				counter = 0;
 			}

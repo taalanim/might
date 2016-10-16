@@ -14,10 +14,14 @@ public class WashingController implements ButtonListener {
 	private ControlUnit cu;
 
 	public WashingController(AbstractWashingMachine theMachine, double theSpeed) {
+		
 		cu = new ControlUnit(theMachine);
 		wc = new WaterController(cu, theSpeed);
+		wc.start();
 		tc = new TemperatureController(cu, theSpeed);
+		tc.start();
 		sc = new SpinController(cu, theSpeed);
+		sc.start();
 		speed = theSpeed;
 	}
 

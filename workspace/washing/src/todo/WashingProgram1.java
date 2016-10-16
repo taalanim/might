@@ -21,6 +21,7 @@ class WashingProgram1 extends WashingProgram {
 	@Override
 	protected void wash() throws InterruptedException {
 
+
 		// Lock the hatch
 		cu.setLock(true);
 

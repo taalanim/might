@@ -27,6 +27,7 @@ public class WaterController extends PeriodicThread {
 	}
 
 	public void perform() {
+	
 		we = (WaterEvent) mailbox.tryFetch();
 
 		if (we != null) {
@@ -44,10 +45,11 @@ public class WaterController extends PeriodicThread {
 				acksent = true; // not acctually sent, but it works
 				break;
 			case  WaterEvent.WATER_FILL:/** Fill water to a given level */
-				cu.setFill(false);
-				cu.setDrain(true);
+				
+				cu.setDrain(false);
+				cu.setFill(true);
 				if (cu.getWaterLevel() >= lastLevel) {
-					cu.setDrain(false);
+					cu.setFill(false);
 					((RTThread) lastOrder.getSource()).putEvent(new RTEvent(this));
 					acksent = true;
 				}
@@ -55,7 +57,7 @@ public class WaterController extends PeriodicThread {
 			case  WaterEvent.WATER_DRAIN:/** Drain, leave drain pump running when finished */
 				cu.setFill(false);
 				cu.setDrain(true);
-				if (lastLevel == 0) {
+				if (cu.getWaterLevel() == 0) {
 					((RTThread) lastOrder.getSource()).putEvent(new RTEvent(this));
 					acksent = true;
 				}

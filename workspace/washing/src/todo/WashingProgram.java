@@ -78,6 +78,7 @@ public abstract class WashingProgram extends RTThread {
 	 * </OL>
 	 */
 	public void run() {
+		
 		boolean wasInterrupted = false;
 		try {
 			wash();
@@ -131,26 +132,30 @@ public abstract class WashingProgram extends RTThread {
 	protected SpinController spin;
 	protected long sec;
 	
-	protected double fullMachine = 0.9;
+	protected double fullMachine = 0.5;
 
 	protected void fillSpinDrain(double heatingTo, long time) {
 		// let water into the machine
 		water.putEvent(new WaterEvent(this, WaterEvent.WATER_FILL, fullMachine));
+	
 		mailbox.doFetch();
 
 		// heat to heatingTo C, keep the temperature for time minutes
 		temp.putEvent(new TemperatureEvent(this, TemperatureEvent.TEMP_SET, heatingTo));
 		spin.putEvent(new SpinEvent(this, SpinEvent.SPIN_SLOW));
+	
 		mailbox.doFetch();
 		sleep(time * 60 * sec);
+	
 		temp.putEvent(new TemperatureEvent(this, TemperatureEvent.TEMP_IDLE, 0.0));
 		spin.putEvent(new SpinEvent(this, SpinEvent.SPIN_OFF));
-		mailbox.doFetch();
 
 		// drain
+	
 		water.putEvent(new WaterEvent(this, WaterEvent.WATER_DRAIN, 0.0));
 		mailbox.doFetch();
 		water.putEvent(new WaterEvent(this, WaterEvent.WATER_IDLE, 0.0));
+		
 	}
 
 	protected void rinseAndCentrifuge() {
@@ -163,13 +168,15 @@ public abstract class WashingProgram extends RTThread {
 			spin.putEvent(new SpinEvent(this, SpinEvent.SPIN_OFF));
 			water.putEvent(new WaterEvent(this, WaterEvent.WATER_DRAIN, 0.0));
 			mailbox.doFetch();
+			
 		}
 
+		water.putEvent(new WaterEvent(this, WaterEvent.WATER_IDLE, 0.0));
 		// centrifuge 5 minutes
+
 		spin.putEvent(new SpinEvent(this, SpinEvent.SPIN_FAST));
 		sleep(5 * 60 * sec);
 		spin.putEvent(new SpinEvent(this, SpinEvent.SPIN_OFF));
-		mailbox.doFetch();
 	}
 
 }
