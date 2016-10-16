@@ -10,7 +10,7 @@ import done.AbstractWashingMachine;
 
 public class ControlUnit {
 	private AbstractWashingMachine wm;
-	private boolean input = false, output = false;
+	private boolean input = false, output = false, isHeatOn = false;
 
 	public ControlUnit(AbstractWashingMachine a) {
 		wm = a;
@@ -26,8 +26,8 @@ public class ControlUnit {
 	}
 
 	// 1
-	public boolean setDrain(boolean on) {
-		if (on && input) {
+	public boolean setDrain(boolean on) {// obs if heating is on
+		if (on && input || on && wm.getWaterLevel() <= 0.1) {
 			return false;
 		}
 		wm.setDrain(on);
@@ -41,6 +41,7 @@ public class ControlUnit {
 		}
 
 		wm.setHeating(on);
+		isHeatOn = on;
 		return true;
 	}
 
@@ -76,5 +77,7 @@ public class ControlUnit {
 	public boolean isLocked() {
 		return wm.isLocked();
 	}
-
+	public boolean isHeatOn() {
+		return isHeatOn;
+	}
 }
