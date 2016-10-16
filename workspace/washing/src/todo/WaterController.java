@@ -47,7 +47,7 @@ public class WaterController extends PeriodicThread {
 			case  WaterEvent.WATER_FILL:/** Fill water to a given level */
 				cu.setFill(false);
 				cu.setDrain(true);
-				if (cu.getWaterLevel() == lastLevel) {
+				if (cu.getWaterLevel() >= lastLevel) {
 					cu.setDrain(false);
 					((RTThread) lastOrder.getSource()).putEvent(new RTEvent(this));
 					acksent = true;
